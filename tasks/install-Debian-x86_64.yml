@@ -1,0 +1,18 @@
+---
+
+- fail:
+    msg: Unsupported package manager
+  when: ansible_pkg_mgr != 'apt'
+
+- name: Install the required packages
+  package:
+    name:  '{{ item }}'
+    state: present
+  with_items:
+    - apt-transport-https
+    - debian-archive-keyring
+
+- name: Add repository APT key
+  apt_key:
+    url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+    state: present

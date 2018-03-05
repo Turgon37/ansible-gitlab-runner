@@ -1,0 +1,15 @@
+---
+
+- name: Run the OS specific install tasks (fail if not supported)
+  include_tasks: '{{ item }}'
+  with_first_found:
+    - files:
+        - 'install-{{ ansible_distribution }}-{{ ansible_architecture }}.yml'
+        - 'install-{{ ansible_lsb.id|d(ansible_distribution) }}.yml'
+        - 'install-{{ ansible_os_family }}-{{ ansible_architecture }}.yml'
+
+- name: Install the gitlab-runner packages
+  package:
+    name:  '{{ item }}'
+    state: present
+  with_items: '{{ gitlab_runner__packages_names }}'

@@ -1,0 +1,9 @@
+---
+# defaults file for gitlab-runner
+
+# Enable facts deploiement
+gitlab_runner__facts: True
+
+# List of package to install
+gitlab_runner__packages_names:
+  - gitlab-runner
