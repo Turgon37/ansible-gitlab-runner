@@ -21,7 +21,7 @@
   ignore_errors: '{{ httpproxy is defined }}'
 
 - name: Add repository APT key using http proxy
-  command: 'curl --location --proxy "{{ httpproxy }}" "{{ gitlab_runner__apt_key }}" | apt-key add -'
+  shell: 'curl --location --proxy "{{ httpproxy }}" "{{ gitlab_runner__apt_key }}" | apt-key add -'
   when: _gitlab_runner__apt_key|failed and httpproxy is defined
 
 - name: Add apt repository
