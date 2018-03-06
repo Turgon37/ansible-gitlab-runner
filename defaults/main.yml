@@ -7,3 +7,6 @@ gitlab_runner__facts: True
 # List of package to install
 gitlab_runner__packages_names:
   - gitlab-runner
+
+# The url template to generate apt repository
+gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main'
