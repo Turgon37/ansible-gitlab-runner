@@ -8,5 +8,8 @@ gitlab_runner__facts: True
 gitlab_runner__packages_names:
   - gitlab-runner
 
+#
+gitlab_runner__apt_key: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+
 # The url template to generate apt repository
 gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main'
