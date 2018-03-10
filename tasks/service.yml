@@ -1,1 +1,7 @@
 ---
+
+- name: Ensure Gitlab runner is started and enabled on boot
+  service:
+    name:    '{{ gitlab_runner__service_name }}'
+    enabled: '{{ gitlab_runner__service_enabled|bool }}'
+    state:   "{{ gitlab_runner__service_enabled|bool|ternary('started', 'stopped') }}"

@@ -1,0 +1,32 @@
+#
+# {{ ansible_managed }}
+#
+concurrent = {{ gitlab_runner__concurrent|int }}
+log_level = "{{ gitlab_runner__log_level }}"
+check_interval = {{ gitlab_runner__check_interval|int }}
+{% if gitlab_runner__metrics_server is defined %}
+metrics_server = "{{ gitlab_runner__metrics_server }}"
+{% endif %}
+
+{% for instance in gitlab_runner__instances if instance.state|d('present') == 'present' %}
+[[runners]]
+  name = "{{ instance.name }}"
+  url = "{{ instance.url|d(gitlab_runner__coordinator_url) }}"
+  token = "{{ _gitlab_runner__tokens[instance.name]|d('CHECK_MODE') if ansible_check_mode else _gitlab_runner__tokens[instance.name] }}"
+{% if instance.environment|d([])|length > 0 %}
+{%   set _instance_environments = [] %}
+{%   if instance.environment is mapping %}
+{%     for name, value in instance.environment.iteritems() %}
+{%       set _ = _instance_environments.append(name~'='~value) %}
+{%     endfor %}
+{%   elif instance.environment is string %}
+{%     set _ = _instance_environments.append(instance.environment) %}
+{%   else %}
+{%     for element in instance.environment %}
+{%       set _ = _instance_environments.append(element) %}
+{%     endfor %}
+{%   endif %}
+  environment = ["{{ _instance_environments|join('", "') }}"]
+{% endif %}
+  executor = "{{ instance.executor }}"
+{% endfor %}

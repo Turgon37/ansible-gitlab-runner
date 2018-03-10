@@ -8,8 +8,65 @@ gitlab_runner__facts: True
 gitlab_runner__packages_names:
   - gitlab-runner
 
-#
-gitlab_runner__apt_key: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+# The name of the service
+gitlab_runner__service_name: gitlab-runner
+
+# If the daemon must be enabled
+gitlab_runner__service_enabled: True
+
+# The id of the gpg key
+gitlab_runner__apt_key_id: 1A4C919DB987D435939638B914219A96E15E78F4
+
+# The url to the debian gpg key
+gitlab_runner__apt_key_url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
 
 # The url template to generate apt repository
 gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main'
+
+# Specify here the full url to your gitlab instance
+#gitlab_runner__coordinator_url:
+
+# API endpoint to which to make POST request to register new runner
+gitlab_runner__registration_endpoint: /api/v4/runners
+
+# API endpoint to which to make DELETE request to unregister old runner
+gitlab_runner__unregistration_endpoint: /api/v4/runners
+
+# The registration tokens available in Gitlab admin panel
+#gitlab_runner__registration_token:
+
+# Gitlab runner global settings
+# see https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
+
+# limits how many jobs globally can be run concurrently.
+# The most upper limit of jobs using all defined runners. 0 does not mean unlimited
+gitlab_runner__concurrent: '{{ ansible_processor_vcpus }}'
+
+# Log level (options: debug, info, warn, error, fatal, panic). 
+gitlab_runner__log_level: info
+
+# defines the interval length, in seconds, between new jobs check. The default value is 3
+gitlab_runner__check_interval: 0
+
+# address (<host>:<port>) on which the Prometheus metrics HTTP server should be listening
+#gitlab_runner__metrics_server: 
+
+gitlab_runner__instance_name_prefix: '{{ ansible_hostname }}__'
+
+# Lists of runner instance to register to gitlab
+gitlab_runner__default_instances: []
+gitlab_runner__global_instances: []
+gitlab_runner__group_instances: []
+gitlab_runner__host_instances: []
+
+gitlab_runner__instances: '{{ gitlab_runner__default_instances
+  |union(gitlab_runner__global_instances)
+  |union(gitlab_runner__group_instances)
+  |union(gitlab_runner__host_instances)
+}}'
+
+# Default value for allowing untagged build for new runner
+gitlab_runner__run_untagged: True
+
+# Private configs
+gitlab_runner__runner_tokens_file: /etc/gitlab-runner/ansible_runner_token

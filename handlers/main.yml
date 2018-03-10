@@ -1,0 +1,7 @@
+---
+# handlers file for gitlab-runner
+
+- name: restart-gitlab-runner
+  service:
+    name: '{{ gitlab_runner__service_name }}'
+    state: restarted

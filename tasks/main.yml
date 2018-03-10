@@ -12,6 +12,9 @@
       skip: true
   tags: ['always']
 
+- import_tasks: init.yml
+  tags: ['always']
+
 - import_tasks: install.yml
   tags: ['gitlab-runner', 'gitlab-runner-install']
 

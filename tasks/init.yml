@@ -1,0 +1,16 @@
+---
+
+- name: Assert required variables
+  assert:
+    that:
+      - gitlab_runner__coordinator_url is defined
+      - gitlab_runner__registration_token is defined
+
+- name: Normalize instance name
+  set_fact:
+    gitlab_runner__instances: "
+      {%- set _ = gitlab_runner__instances.remove(item) -%}
+      {%- set item = item|combine( {'name' : gitlab_runner__instance_name_prefix~(item.name|d(item.executor))} ) -%}
+      {%- set _ = gitlab_runner__instances.append(item) -%}
+      {{ gitlab_runner__instances }}"
+  with_items: '{{ gitlab_runner__instances }}'
