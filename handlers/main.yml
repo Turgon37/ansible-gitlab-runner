@@ -5,3 +5,4 @@
   service:
     name: '{{ gitlab_runner__service_name }}'
     state: restarted
+  when: gitlab_runner__service_enabled|bool
