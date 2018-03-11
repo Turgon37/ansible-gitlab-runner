@@ -24,6 +24,6 @@
 - import_tasks: service.yml
   tags: ['gitlab-runner', 'gitlab-runner-service']
 
-#- include_tasks: facts.yml
-  #when: gitlab_runner__facts|bool
-  #tags: ['gitlab-runner', 'gitlab-runner-facts']
+- include_tasks: facts.yml
+  when: gitlab_runner__facts|bool
+  tags: ['gitlab-runner', 'gitlab-runner-facts']
