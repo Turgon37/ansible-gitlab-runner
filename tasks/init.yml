@@ -6,6 +6,13 @@
       - gitlab_runner__coordinator_url is defined
       - gitlab_runner__registration_token is defined
 
+- name: Assert instances configurations
+  assert:
+    that:
+      - item.name is defined
+      - item.executor is defined and item.executor in gitlab_runner__available_executors
+  with_items: '{{ gitlab_runner__instances }}'
+
 - name: Normalize instance name
   set_fact:
     gitlab_runner__instances: "

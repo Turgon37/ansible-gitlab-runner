@@ -46,7 +46,8 @@
             'token': gitlab_runner__registration_token,
             'description': instance.name,
             'tag_list': instance.tags|d([])|unique|join(','),
-            'run_untagged': instance.run_untagged|d(gitlab_runner__run_untagged)
+            'run_untagged': instance.run_untagged|d(gitlab_runner__default_run_untagged),
+            'locked': instance.locked|d(gitlab_runner__default_locked)
           }
         }}"
         body_format: json

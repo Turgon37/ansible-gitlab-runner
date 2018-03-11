@@ -66,7 +66,32 @@ gitlab_runner__instances: '{{ gitlab_runner__default_instances
 }}'
 
 # Default value for allowing untagged build for new runner
-gitlab_runner__run_untagged: True
+gitlab_runner__default_run_untagged: True
+
+# Define default locked state for new instances
+gitlab_runner__default_locked: False
+
+# Default shell to use
+gitlab_runner__default_shell: bash
 
 # Private configs
 gitlab_runner__runner_tokens_file: /etc/gitlab-runner/ansible_runner_token
+
+# List of configuration keys only used during register step
+gitlab_runner__register_config_keys:
+  - token
+  - locked
+  - run_untagged
+  - tags
+
+# List of available executors
+gitlab_runner__available_executors:
+  - shell
+  - docker
+  - docker-ssh
+  - ssh
+  - parallels
+  - virtualbox
+  - docker+machine
+  - docker-ssh+machine
+  - kubernetes

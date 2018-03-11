@@ -1,3 +1,4 @@
+{%- import '_macros.j2' as macros with context -%}
 #
 # {{ ansible_managed }}
 #
@@ -8,25 +9,42 @@ check_interval = {{ gitlab_runner__check_interval|int }}
 metrics_server = "{{ gitlab_runner__metrics_server }}"
 {% endif %}
 
+{% set _internally_handled_keys = ['environment', 'shell'] %}
 {% for instance in gitlab_runner__instances if instance.state|d('present') == 'present' %}
 [[runners]]
-  name = "{{ instance.name }}"
   url = "{{ instance.url|d(gitlab_runner__coordinator_url) }}"
   token = "{{ _gitlab_runner__tokens[instance.name]|d('CHECK_MODE') if ansible_check_mode else _gitlab_runner__tokens[instance.name] }}"
-{% if instance.environment|d([])|length > 0 %}
-{%   set _instance_environments = [] %}
-{%   if instance.environment is mapping %}
-{%     for name, value in instance.environment.iteritems() %}
-{%       set _ = _instance_environments.append(name~'='~value) %}
-{%     endfor %}
-{%   elif instance.environment is string %}
-{%     set _ = _instance_environments.append(instance.environment) %}
-{%   else %}
-{%     for element in instance.environment %}
-{%       set _ = _instance_environments.append(element) %}
-{%     endfor %}
-{%   endif %}
+{%   if instance.environment|d([])|length > 0 %}
+{%     set _instance_environments = [] %}
+{%     if instance.environment is mapping %}
+{%       for name, value in instance.environment.iteritems() %}
+{%         set _ = _instance_environments.append(name~'='~value) %}
+{%       endfor %}
+{%     elif instance.environment is string %}
+{%       set _ = _instance_environments.append(instance.environment) %}
+{%     else %}
+{%       for element in instance.environment %}
+{%         set _ = _instance_environments.append(element) %}
+{%       endfor %}
+{%     endif %}
   environment = ["{{ _instance_environments|join('", "') }}"]
-{% endif %}
-  executor = "{{ instance.executor }}"
+{%   endif %}
+  shell = {{ macros.tomlValue(instance.shell|d(gitlab_runner__default_shell)) }}
+{# RUNNER GENERIC KEYS #}
+{%   for key, value in instance|dictsort if key not in gitlab_runner__register_config_keys
+                                                        |union(_internally_handled_keys) %}
+{%     if not key|regex_search('^[a-z]+_options$') %}
+  {{ key }} = {{ macros.tomlValue(value) }}
+{%     endif %}
+{%   endfor %}
+{# RUNNER PER EXECUTOR SPECIFIC KEYS #}
+{%   for key, value in instance|dictsort if key not in gitlab_runner__register_config_keys
+                                                        |union(_internally_handled_keys) %}
+{%     if key|regex_search('^[a-z]+_options$') %}
+  [runners.{{ key|regex_replace('^([a-z]+)_options$', '\\1') }}]
+{%       for sub_key, sub_value in value|dictsort %}
+    {{ sub_key }} = {{ macros.tomlValue(sub_value) }}
+{%       endfor %}
+{%     endif %}
+{%   endfor %}
 {% endfor %}

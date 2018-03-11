@@ -1,0 +1,18 @@
+{#
+ # Filter for parameters that accepts
+ # boolean and string values
+ #
+ # @param value : the value of the parameter
+ # @return string
+ #}
+{%- macro tomlValue(value) -%}
+{%-   if value is string -%}
+"{{ value }}"
+{%-   elif value|bool == value -%}
+{{ value|bool|lower }}
+{%-   elif value is sequence -%}
+["{{ value|join('", "') }}"]
+{%-   else -%}
+{{ value }}
+{%-   endif -%}
+{%- endmacro -%}
