@@ -25,7 +25,7 @@
 
 - name: Add repository APT key using http proxy
   shell: 'curl --location --proxy "{{ httpproxy }}" "{{ gitlab_runner__apt_key_url }}" | apt-key add -'
-  when: _gitlab_runner__apt_key|failed and httpproxy is defined
+  when: _gitlab_runner__apt_key is failed and httpproxy is defined
 
 - name: Add apt repository
   apt_repository:

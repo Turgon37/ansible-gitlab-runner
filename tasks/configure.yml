@@ -69,7 +69,7 @@
       set_fact:
         _gitlab_runner__tokens: "{{ _gitlab_runner__tokens|combine({ item.instance.name: item.json.token }) }}"
       with_items: '{{ _gitlab_runner__register_instances.results }}'
-      when: not item|skipped and not item|failed and item|success
+      when: not item is skipped and not item is failed and item is success
 
     - name: Save runners tokens metadatas
       copy:
@@ -120,7 +120,7 @@
       set_fact:
         _gitlab_runner__tokens: '{% set _ = _gitlab_runner__tokens.pop(item.instance.name) %}{{ _gitlab_runner__tokens }}'
       with_items: '{{ _gitlab_runner__unregister_instances.results }}'
-      when: not item|skipped and not item|failed and item|success
+      when: not item is skipped and not item|failed and item is success
 
     - name: Save runners tokens metadatas
       copy:
