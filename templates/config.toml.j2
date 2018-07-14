@@ -17,7 +17,7 @@ metrics_server = "{{ gitlab_runner__metrics_server }}"
 {%   if instance.environment|d([])|length > 0 %}
 {%     set _instance_environments = [] %}
 {%     if instance.environment is mapping %}
-{%       for name, value in instance.environment.iteritems() %}
+{%       for name, value in instance.environment|dictsort %}
 {%         set _ = _instance_environments.append(name~'='~value) %}
 {%       endfor %}
 {%     elif instance.environment is string %}

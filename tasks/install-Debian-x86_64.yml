@@ -6,7 +6,7 @@
 
 - name: Install the required packages
   package:
-    name:  '{{ package_item }}'
+    name: '{{ package_item }}'
     state: present
   with_items:
     - apt-transport-https
@@ -17,18 +17,18 @@
 
 - name: Add repository APT key using apt_key
   apt_key:
-    id:    '{{ gitlab_runner__apt_key_id }}'
-    url:   '{{ gitlab_runner__apt_key_url }}'
+    id: '{{ gitlab_runner__apt_key_id }}'
+    url: '{{ gitlab_runner__apt_key_url }}'
     state: present
   register: _gitlab_runner__apt_key
-  ignore_errors: '{{ httpproxy is defined }}'
+  ignore_errors: '{{ http_proxy is defined }}'
 
 - name: Add repository APT key using http proxy
-  shell: 'curl --location --proxy "{{ httpproxy }}" "{{ gitlab_runner__apt_key_url }}" | apt-key add -'
-  when: _gitlab_runner__apt_key is failed and httpproxy is defined
+  shell: 'curl --location --proxy "{{ http_proxy }}" "{{ gitlab_runner__apt_key_url }}" | apt-key add -'
+  when: _gitlab_runner__apt_key is failed and http_proxy is defined
 
 - name: Add apt repository
   apt_repository:
-    repo:         '{{ gitlab_runner__apt_repo }}'
-    update_cache: True
-    state:        present
+    repo: '{{ gitlab_runner__apt_repo }}'
+    update_cache: true
+    state: present
