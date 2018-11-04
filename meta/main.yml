@@ -1,12 +1,15 @@
 galaxy_info:
+  role_name: gitlab_runner
   author: Pierre GINDRAUD
-  description: This role configure Gitlab Runner
+  description: This role install and configure a Gitlab Runner instance
   license: MIT
   min_ansible_version: 2.4
   platforms:
     - name: Debian
       versions:
-        - 9
-  galaxy_tags: []
+        - stretch
+  galaxy_tags:
+    - gitlab
+    - runner
 
 dependencies: []

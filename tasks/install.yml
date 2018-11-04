@@ -1,15 +1,38 @@
 ---
 
-- name: Run the OS specific install tasks (fail if not supported)
-  include_tasks: '{{ item }}'
+- name: Download Gitlab runner repository GPG key into local folder
+  get_url:
+    url: '{{ item.url }}'
+    dest: '/tmp/gitlab_runner__gpg-{{ item.id }}'
+    mode: 0644
+  with_items: '{{ gitlab_runner__gpg_keys[ansible_os_family] }}'
+  when: item.state|d('present') == 'present'
+  register: _gitlab_runner__gpg_download
+  until: _gitlab_runner__gpg_download is succeeded
+  retries: 5
+  delay: 2
+  check_mode: false
+  delegate_to: localhost
+
+- name: Upload Gitlab runner GPG key to server
+  copy:
+    src: '/tmp/gitlab_runner__gpg-{{ item.id }}'
+    dest: '/tmp/gitlab_runner__gpg-{{ item.id }}'
+  with_items: '{{ gitlab_runner__gpg_keys[ansible_os_family] }}'
+  when: item.state|d('present') == 'present'
+  check_mode: false
+
+- name: Including distribution specific install tasks (fail if not supported)
+  include_tasks: '{{ file_item }}'
   with_first_found:
     - files:
         - 'install-{{ ansible_distribution }}-{{ ansible_architecture }}.yml'
         - 'install-{{ ansible_lsb.id|d(ansible_distribution) }}.yml'
         - 'install-{{ ansible_os_family }}-{{ ansible_architecture }}.yml'
+  loop_control:
+    loop_var: file_item
 
 - name: Install the gitlab-runner packages
   package:
-    name:  '{{ item }}'
+    name: '{{ gitlab_runner__packages_names|list }}'
     state: present
-  with_items: '{{ gitlab_runner__packages_names }}'

@@ -2,14 +2,16 @@
 
 - name: Create custom fact directory
   file:
-    path:  "{{ facts__dir|d('/etc/ansible/facts.d') }}"
+    path: "{{ facts__dir|d('/etc/ansible/facts.d') }}"
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     state: directory
+  tags: ['gitlab-runner', 'gitlab-runner-facts']
 
 - name: Insert custom fact file
   copy:
-    src:  'files/gitlab-runner.py'
+    src: files/gitlab-runner.facts.py
     dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/gitlab-runner.fact"
     mode: 0755
+  tags: ['gitlab-runner', 'gitlab-runner-facts']

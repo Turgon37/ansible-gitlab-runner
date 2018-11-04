@@ -1,34 +1,31 @@
 ---
 
-- fail:
+- name: Fail on bad package manager fact
+  fail:
     msg: Unsupported package manager
   when: ansible_pkg_mgr != 'apt'
+  tags: ['always']
 
 - name: Install the required packages
   package:
-    name: '{{ package_item }}'
+    name:
+      - apt-transport-https
+      - curl
+      - debian-archive-keyring
     state: present
-  with_items:
-    - apt-transport-https
-    - curl
-    - debian-archive-keyring
-  loop_control:
-    loop_var: package_item
+  tags: ['gitlab-runner', 'gitlab-runner-install']
 
-- name: Add repository APT key using apt_key
+- name: Add docker repository GPG key to apt keyring
   apt_key:
-    id: '{{ gitlab_runner__apt_key_id }}'
-    url: '{{ gitlab_runner__apt_key_url }}'
-    state: present
-  register: _gitlab_runner__apt_key
-  ignore_errors: '{{ http_proxy is defined }}'
-
-- name: Add repository APT key using http proxy
-  shell: 'curl --location --proxy "{{ http_proxy }}" "{{ gitlab_runner__apt_key_url }}" | apt-key add -'
-  when: _gitlab_runner__apt_key is failed and http_proxy is defined
+    id: '{{ item.id }}'
+    file: "{{ omit if item.state|d('present') != 'present' else '/tmp/gitlab_runner__gpg-'~item.id }}"
+    state: "{{ item.state|d('present') }}"
+  with_items: '{{ gitlab_runner__gpg_keys[ansible_os_family] }}'
+  tags: ['gitlab-runner', 'gitlab-runner-install']
 
 - name: Add apt repository
   apt_repository:
     repo: '{{ gitlab_runner__apt_repo }}'
     update_cache: true
     state: present
+  tags: ['gitlab-runner', 'gitlab-runner-install']

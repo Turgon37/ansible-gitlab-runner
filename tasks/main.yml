@@ -12,18 +12,23 @@
       skip: true
   tags: ['always']
 
-- import_tasks: init.yml
+- name: Importing initialization tasks
+  import_tasks: init.yml
   tags: ['always']
 
-- import_tasks: install.yml
+- name: Importing install tasks
+  import_tasks: install.yml
   tags: ['gitlab-runner', 'gitlab-runner-install']
 
-- import_tasks: configure.yml
+- name: Importing configuration tasks
+  import_tasks: configure.yml
   tags: ['gitlab-runner', 'gitlab-runner-configure']
 
-- import_tasks: service.yml
+- name: Importing service tasks
+  import_tasks: service.yml
   tags: ['gitlab-runner', 'gitlab-runner-service']
 
-- include_tasks: facts.yml
+- name: Optionally including facts tasks
+  include_tasks: facts.yml
   when: gitlab_runner__facts|bool
   tags: ['gitlab-runner', 'gitlab-runner-facts']

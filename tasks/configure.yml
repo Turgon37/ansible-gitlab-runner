@@ -5,8 +5,8 @@
     url: '{{ gitlab_runner__coordinator_url }}'
   register: _gitlab_runner__api_liveness
   when: gitlab_runner__coordinator_url is defined
-  check_mode: False
-  ignore_errors: True
+  check_mode: false
+  ignore_errors: true
 
 - name: Check if tokens storage file exists
   stat:
@@ -53,12 +53,12 @@
         body_format: json
         method: POST
         headers:
-          Content-Type: "application/json"
+          Content-Type: application/json
         status_code: 201
       with_items: '{{ gitlab_runner__instances }}'
-      when: _gitlab_runner__api_liveness.status == 200 and
-          instance.state|d('present') == 'present' and
-          instance.name not in _gitlab_runner__tokens.keys()
+      when: _gitlab_runner__api_liveness.status == 200
+        and instance.state|d('present') == 'present'
+        and instance.name not in _gitlab_runner__tokens.keys()
       changed_when: _gitlab_runner__register_instances.status == 201
       register: _gitlab_runner__register_instances
       loop_control:
@@ -69,24 +69,26 @@
       set_fact:
         _gitlab_runner__tokens: "{{ _gitlab_runner__tokens|combine({ item.instance.name: item.json.token }) }}"
       with_items: '{{ _gitlab_runner__register_instances.results }}'
-      when: not item is skipped and not item is failed and item is success
+      when: not item is skipped
+        and not item is failed
+        and item is success
 
     - name: Save runners tokens metadatas
       copy:
-        dest:    '{{ gitlab_runner__runner_tokens_file }}'
-        mode:    0600
+        dest: '{{ gitlab_runner__runner_tokens_file }}'
+        mode: 0600
         content: '{{ _gitlab_runner__tokens|to_json }}'
 
 # configure runner
 
 - name: Generate GitLab Runner configuration files
   template:
-    src:    config.toml.j2
-    dest:   /etc/gitlab-runner/config.toml
-    owner:  root
-    group:  root
-    mode:   0600
-  notify: [ 'restart-gitlab-runner' ]
+    src: config.toml.j2
+    dest: /etc/gitlab-runner/config.toml
+    owner: root
+    group: root
+    mode: 0600
+  notify: ['restart-gitlab-runner']
 
 # unregister runner
 
@@ -104,12 +106,12 @@
         body_format: json
         method: DELETE
         headers:
-          Content-Type: "application/json"
+          Content-Type: application/json
         status_code: 204,403
       with_items: '{{ gitlab_runner__instances }}'
-      when: _gitlab_runner__api_liveness.status == 200 and
-          instance.state|d('present') != 'present' and
-          instance.name in _gitlab_runner__tokens.keys()
+      when: _gitlab_runner__api_liveness.status == 200
+        and instance.state|d('present') != 'present'
+        and instance.name in _gitlab_runner__tokens.keys()
       changed_when: _gitlab_runner__unregister_instances.status == 204
       register: _gitlab_runner__unregister_instances
       loop_control:
@@ -120,10 +122,12 @@
       set_fact:
         _gitlab_runner__tokens: '{% set _ = _gitlab_runner__tokens.pop(item.instance.name) %}{{ _gitlab_runner__tokens }}'
       with_items: '{{ _gitlab_runner__unregister_instances.results }}'
-      when: not item is skipped and not item|failed and item is success
+      when: not item is skipped
+        and not item|failed
+        and item is success
 
     - name: Save runners tokens metadatas
       copy:
-        dest:    '{{ gitlab_runner__runner_tokens_file }}'
-        mode:    0600
+        dest: '{{ gitlab_runner__runner_tokens_file }}'
+        mode: 0600
         content: '{{ _gitlab_runner__tokens|to_json }}'

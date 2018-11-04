@@ -2,29 +2,35 @@
 # defaults file for gitlab-runner
 
 # Enable facts deploiement
-gitlab_runner__facts: True
+gitlab_runner__facts: true
 
+
+### INSTALLATION CONFIGURATION
+# ---------------------------------------
 # List of package to install
 gitlab_runner__packages_names:
   - gitlab-runner
 
+# List of GPG keys to add
+gitlab_runner__gpg_keys:
+  Debian:
+    - id: 1A4C919DB987D435939638B914219A96E15E78F4
+      url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+
+# The url template to generate apt repository
+gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main'
+
+
+### SERVICE CONFIGURATION
+# ---------------------------------------
 # The name of the service
 gitlab_runner__service_name: gitlab-runner
 
 # If the daemon must be enabled
-gitlab_runner__service_enabled: True
-
-# The id of the gpg key
-gitlab_runner__apt_key_id: 1A4C919DB987D435939638B914219A96E15E78F4
-
-# The url to the debian gpg key
-gitlab_runner__apt_key_url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
-
-# The url template to generate apt repository
-gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main'
+gitlab_runner__service_enabled: true
 
 # Specify here the full url to your gitlab instance
-#gitlab_runner__coordinator_url:
+# gitlab_runner__coordinator_url:
 
 # API endpoint to which to make POST request to register new runner
 gitlab_runner__registration_endpoint: /api/v4/runners
@@ -33,8 +39,11 @@ gitlab_runner__registration_endpoint: /api/v4/runners
 gitlab_runner__unregistration_endpoint: /api/v4/runners
 
 # The registration tokens available in Gitlab admin panel
-#gitlab_runner__registration_token:
+# gitlab_runner__registration_token:
 
+
+### GITLAB RUNNER CONFIGURATION
+# ---------------------------------------
 # Gitlab runner global settings
 # see https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
 
@@ -42,34 +51,34 @@ gitlab_runner__unregistration_endpoint: /api/v4/runners
 # The most upper limit of jobs using all defined runners. 0 does not mean unlimited
 gitlab_runner__concurrent: '{{ ansible_processor_vcpus }}'
 
-# Log level (options: debug, info, warn, error, fatal, panic). 
+# Log level (options: debug, info, warn, error, fatal, panic).
 gitlab_runner__log_level: info
 
 # defines the interval length, in seconds, between new jobs check. The default value is 3
 gitlab_runner__check_interval: 0
 
 # address (<host>:<port>) on which the Prometheus metrics HTTP server should be listening
-#gitlab_runner__metrics_server: 
+# gitlab_runner__metrics_server:
 
 gitlab_runner__instance_name_prefix: '{{ ansible_hostname }}__'
 
 # Lists of runner instance to register to gitlab
-gitlab_runner__default_instances: []
-gitlab_runner__global_instances: []
-gitlab_runner__group_instances: []
-gitlab_runner__host_instances: []
+gitlab_runner__instances_default: []
+gitlab_runner__instances_global: []
+gitlab_runner__instances_group: []
+gitlab_runner__instances_host: []
 
-gitlab_runner__instances: '{{ gitlab_runner__default_instances
-  |union(gitlab_runner__global_instances)
-  |union(gitlab_runner__group_instances)
-  |union(gitlab_runner__host_instances)
+gitlab_runner__instances: '{{ gitlab_runner__instances_default
+  |union(gitlab_runner__instances_global)
+  |union(gitlab_runner__instances_group)
+  |union(gitlab_runner__instances_host)
 }}'
 
 # Default value for allowing untagged build for new runner
-gitlab_runner__default_run_untagged: True
+gitlab_runner__default_run_untagged: true
 
 # Define default locked state for new instances
-gitlab_runner__default_locked: False
+gitlab_runner__default_locked: false
 
 # Default shell to use
 gitlab_runner__default_shell: bash
