@@ -11,7 +11,7 @@
     that:
       - item.name is defined
       - item.executor is defined and item.executor in gitlab_runner__available_executors
-  with_items: '{{ gitlab_runner__instances }}'
+  with_items: '{{ gitlab_runner__instances|list }}'
 
 - name: Normalize instance name
   set_fact:

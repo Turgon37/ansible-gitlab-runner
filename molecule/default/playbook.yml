@@ -5,3 +5,6 @@
   any_errors_fatal: true
   roles:
     - role: ansible-gitlab-runner
+  vars:
+    gitlab_runner__coordinator_url: https://gitlab.www.custom.domain.net/
+    gitlab_runner__registration_token: XXXXXXXXXXX
