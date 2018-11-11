@@ -27,7 +27,7 @@ metrics_server = "{{ gitlab_runner__metrics_server }}"
 {%         set _ = _instance_environments.append(element) %}
 {%       endfor %}
 {%     endif %}
-  environment = ["{{ _instance_environments|join('", "') }}"]
+  environment = ["{{ _instance_environments|sort|join('", "') }}"]
 {%   endif %}
   shell = {{ macros.tomlValue(instance.shell|d(gitlab_runner__default_shell)) }}
 {# RUNNER GENERIC KEYS #}

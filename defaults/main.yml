@@ -18,7 +18,11 @@ gitlab_runner__gpg_keys:
       url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
 
 # The url template to generate apt repository
-gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main'
+gitlab_runner__apt_repo: >-
+  deb
+  https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution|lower }}/
+  {{ ansible_distribution_release }}
+  main
 
 
 ### SERVICE CONFIGURATION
