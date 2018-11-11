@@ -18,7 +18,11 @@ gitlab_runner__gpg_keys:
       url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
 
 # The url template to generate apt repository
-gitlab_runner__apt_repo: 'deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main'
+gitlab_runner__apt_repo: >-
+  deb
+  https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution|lower }}/
+  {{ ansible_distribution_release }}
+  main
 
 
 ### SERVICE CONFIGURATION
@@ -58,8 +62,9 @@ gitlab_runner__log_level: info
 gitlab_runner__check_interval: 0
 
 # address (<host>:<port>) on which the Prometheus metrics HTTP server should be listening
-# gitlab_runner__metrics_server:
+gitlab_runner__listen_address: '{{ gitlab_runner__metrics_server|d(none) }}'
 
+# Name prefix to apply on runner instance name
 gitlab_runner__instance_name_prefix: '{{ ansible_hostname }}__'
 
 # Lists of runner instance to register to gitlab

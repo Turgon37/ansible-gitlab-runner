@@ -6,6 +6,13 @@
       - gitlab_runner__coordinator_url is defined
       - gitlab_runner__registration_token is defined
 
+- name: Print deprecated message for gitlab_runner__metrics_server
+  debug:
+    msg: "'gitlab_runner__metrics_server' is deprecated, use gitlab_runner__listen_address instead"
+  when: gitlab_runner__metrics_server is defined
+  failed_when: true
+  ignore_errors: true
+
 - name: Assert instances configurations
   assert:
     that:
