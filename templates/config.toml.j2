@@ -5,8 +5,8 @@
 concurrent = {{ gitlab_runner__concurrent|int }}
 log_level = "{{ gitlab_runner__log_level }}"
 check_interval = {{ gitlab_runner__check_interval|int }}
-{% if gitlab_runner__metrics_server is defined %}
-metrics_server = "{{ gitlab_runner__metrics_server }}"
+{% if gitlab_runner__listen_address is defined and gitlab_runner__listen_address is not none %}
+listen_address = "{{ gitlab_runner__listen_address }}"
 {% endif %}
 
 {% set _internally_handled_keys = ['environment', 'shell'] %}
