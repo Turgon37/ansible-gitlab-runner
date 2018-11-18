@@ -9,9 +9,15 @@
     state: directory
   tags: ['gitlab-runner', 'gitlab-runner-facts']
 
+- name: Remove bad nammed custom fact file
+  file:
+    path: "{{ facts__dir|d('/etc/ansible/facts.d') }}/gitlab-runner.fact"
+    state: absent
+  tags: ['gitlab-runner', 'gitlab-runner-facts']
+
 - name: Insert custom fact file
   copy:
-    src: files/gitlab-runner.facts.py
-    dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/gitlab-runner.fact"
+    src: files/gitlab_runner.facts.py
+    dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/gitlab_runner.fact"
     mode: 0755
   tags: ['gitlab-runner', 'gitlab-runner-facts']
